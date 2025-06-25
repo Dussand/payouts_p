@@ -177,31 +177,31 @@ if payouts_metabase is not None:
         except Exception as e:
             st.error(f"Error al guardar el archivo: {e}")
 
-            # status_placeholder.info('Intentando metodo alternativo...')
+            status_placeholder.info('Intentando metodo alternativo...')
             
-            # # Método alternativo si el anterior falla
-            # try:
-            #     #st.info("🔄 Intentando método alternativo...")
+            # Método alternativo si el anterior falla
+            try:
+                #st.info("🔄 Intentando método alternativo...")
                 
-            #     # Método alternativo usando File.save_binary con ruta completa
-            #     File.save_binary(ctx, ruta_archivo_completa, excel_content)
+                # Método alternativo usando File.save_binary con ruta completa
+                File.save_binary(ctx, ruta_archivo_completa, excel_content)
 
-            #     #impiar el placeholder del estado
-            #     status_placeholder.empty()
+                #impiar el placeholder del estado
+                status_placeholder.empty()
 
-            #     #Mensaje de exito
-            #     #st.success(f"Archivo '{archivo_nombre}' guardado con método alternativo (2 hojas).")
+                #Mensaje de exito
+                #st.success(f"Archivo '{archivo_nombre}' guardado con método alternativo (2 hojas).")
                 
-            # except Exception as e2:
-            #     status_placeholder.empty()
-            #     st.error(f"Error también con método alternativo: {e2}")
+            except Exception as e2:
+                status_placeholder.empty()
+                st.error(f"Error también con método alternativo: {e2}")
                 
-            #     # Mostrar información de debug
-            #     st.write("🔍 **Información de debug:**")
-            #     st.write(f"- Ruta completa: {ruta_archivo_completa}")
-            #     st.write(f"- Nombre archivo: {archivo_nombre}")
-            #     st.write(f"- Carpeta mes: {nueva_carpeta_mes}")
-            #     st.write(f"- Tamaño Excel: {len(excel_content)} bytes")
+                # Mostrar información de debug
+                st.write("🔍 **Información de debug:**")
+                st.write(f"- Ruta completa: {ruta_archivo_completa}")
+                st.write(f"- Nombre archivo: {archivo_nombre}")
+                st.write(f"- Carpeta mes: {nueva_carpeta_mes}")
+                st.write(f"- Tamaño Excel: {len(excel_content)} bytes")
 
     def registros_notion(metabase_filter_dife):
         notion_token = st.secrets['notion']['notion_token']
