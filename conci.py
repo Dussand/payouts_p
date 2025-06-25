@@ -565,7 +565,7 @@ if payouts_metabase is not None:
                     if st.button('Guardar conciliación en SharePoint'):
                         guardar_conciliacion(payouts_metabase_df, df_final)
                         st.session_state.guardado_metabase = True
-                        st.rerun()
+                        #st.rerun()
 
                 # if not st.session_state.guardar_record_dif:
                 #     if st.button('Registrar diferencias en Notion'):
