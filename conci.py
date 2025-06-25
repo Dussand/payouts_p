@@ -559,7 +559,7 @@ if payouts_metabase is not None:
                 #payouts_metabase_df.loc[diferencias_, 'Estado'] = f'Conci. {hoy_str} - Diferencias' 
                 payouts_metabase_df.loc[diferencias_, 'Estado'] = f'Conciliacion_{fecha} - Diferencias' #in case doesn't work, delete this
                 metabase_filter_dife = payouts_metabase_df[diferencias_].copy()
-                st.dataframe(metabase_filter_dife)
+                #st.dataframe(metabase_filter_dife)
                 #boton para guardar                   
                 if not st.session_state.guardado_metabase:
                     if st.button('Guardar conciliación en SharePoint'):
