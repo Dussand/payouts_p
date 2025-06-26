@@ -4,3 +4,4 @@ notion-client
 office365-rest-python-client
 openpyxl
 xlsxwriter
+Image
