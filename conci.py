@@ -12,8 +12,8 @@ from notion_client import Client
 from PIL import Image
 
 
-imagen = Image.open('kashio_cover.jpeg')   
-st.image(imagen, use_container_witdh=True)     
+# imagen = Image.open('kashio_cover.jpeg')   
+# st.image(imagen, use_container_witdh=True)     
 
 #por que no funciona?
 
