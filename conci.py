@@ -9,6 +9,11 @@ from office365.sharepoint.files.file import File
 import io
 #from urllib.parse import quote
 from notion_client import Client
+from PIL import Image
+
+
+imagen = Image.open(r'C:\Users\Dussand\Desktop\Finance Career\KASHIO\payouts_p\payouts_p\kashio_cover.jpeg')   
+st.image(imagen, use_column_width=True)     
 
 
 st.title('Conciliacion PAYOUTS dia anterior')
@@ -48,7 +53,7 @@ if payouts_metabase is not None:
     #filtramos por el tipo de moneda
     payouts_metabase_df = payouts_metabase_df[payouts_metabase_df['moneda'] == 'PEN']
 
-    #filtramos todos los bancos menos scotiabank 
+    #filtramos todos los BANCOs menos scotiabank 
     payouts_metabase_df = payouts_metabase_df[payouts_metabase_df['name'] != '(Scotiabank)- Scotiabank ']    
 
     #creamos una tabla pivot con los montos de cada banco
@@ -203,90 +208,45 @@ if payouts_metabase is not None:
                 st.write(f"- Carpeta mes: {nueva_carpeta_mes}")
                 st.write(f"- Tamaño Excel: {len(excel_content)} bytes")
 
-    def registros_notion(metabase_filter_dife):
-        notion_token = st.secrets['notion']['notion_token']
-        database_id =   st.secrets['notion']['database_id']
+    def registros_notion(conciliacion_payouts):
+        notion_token = 'ntn_Yk820926168aR213bRsLF9pqG3t88PU0YMqhUazW4ap2qE'
+        database_id =   '21d030ee56d880de8976ce1b1fe6b8fc'
 
         notion = Client(auth=notion_token)
 
         status_placeholder = st.empty()
         progress_bar = st.progress(0)
 
-        for idx, (_,rows) in enumerate(metabase_filter_dife.iterrows()):
+        for idx, (_,rows) in enumerate(conciliacion_payouts.iterrows()):
             try:
                 notion.pages.create(
                     parent={'database_id': database_id},
                     properties={
-                        'fecha proceso': {
-                            'date': {'start': pd.to_datetime(rows['fecha proceso']).isoformat()}
+                        'FechaTexto': {
+                            'rich_text': [{'text': {'content': str(rows.get('FechaTexto', ''))}}]
                         },
-                        'fecha pagado / rechazado': {
-                            'date': {'start': pd.to_datetime(rows['fecha pagado / rechazado']).isoformat()}
+                        'BANCO': {
+                            'title': [{'text': {'content': str(rows.get('BANCO', ''))}}]
                         },
-                        'empresa': {
-                            'rich_text': [{'text': {'content': str(rows.get('empresa', ''))}}]
+                        'Monto Banco': {
+                            'number': float(rows.get('Monto Banco', 0))
                         },
-                        'nombre proceso': {
-                            'rich_text': [{'text': {'content': str(rows.get('nombre proceso', ''))}}]
+                        'Monto Kashio': {
+                            'number': float(rows.get('Monto Kashio', 0))
                         },
-                        'name': {
-                            'rich_text': [{'text': {'content': str(rows.get('name', ''))}}]
+                        'Diferencia': {
+                            'number': float(rows.get('Diferencia', 0))
                         },
-                        'cliente': {
-                            'rich_text': [{'text': {'content': str(rows.get('cliente', ''))}}]
-                        },
-                        'documento': {
-                            'rich_text': [{'text': {'content': str(rows.get('documento', ''))}}]
-                        },
-                        'referencia': {
-                            'rich_text': [{'text': {'content': str(rows.get('referencia', ''))}}]
-                        },
-                        'moneda': {
-                            'rich_text': [{'text': {'content': str(rows.get('moneda', ''))}}]
-                        },
-                        'monto total': {
-                            'number': float(rows.get('monto total', 0))
-                        },
-                        'cuenta': {
-                            'rich_text': [{'text': {'content': str(rows.get('cuenta', ''))}}]
-                        },
-                        'cci': {
-                            'rich_text': [{'text': {'content': str(rows.get('cci', ''))}}]
-                        },
-                        'codigo_kashio': {
-                            'rich_text': [{'text': {'content': str(rows.get('codigo_kashio', ''))}}]
-                        },
-                        'po_referencia': {
-                            'rich_text': [{'text': {'content': str(rows.get('po_referencia', ''))}}]
-                        },
-                        'ope_psp': {
-                            'rich_text': [{'text': {'content': str(rows.get('ope_psp', ''))}}]
-                        },
-                        'estado': {
-                            'rich_text': [{'text': {'content': str(rows.get('estado', ''))}}]
-                        },
-                        'payout_process_public_id': {
-                            'rich_text': [{'text': {'content': str(rows.get('payout_process_public_id', ''))}}]
-                        },
-                        'motivo rechazo': {
-                            'rich_text': [{'text': {'content': str(rows.get('motivo rechazo', ''))}}]
-                        },
-                        'fecha_proceso': {
-                            'rich_text': [{'text': {'content': str(rows.get('fecha_proceso', ''))}}]
-                        },
-                        'hora': {
-                            'number': float(rows.get('hora', 0))
-                        },                        
-                        'date': {
-                            'rich_text': [{'text': {'content': str(rows.get('date', ''))}}]
-                        },
-                         'Estado': {
-                            'rich_text': [{'text': {'content': str(rows.get('Estado', ''))}}]
-                        }                                               
+
+                        'Estado': {
+                            'select': {
+                                'name': str(rows.get('Estado', ''))
+                            }
+                        }                                      
                     }
                 )
 
-                progress = (idx + 1) / len(metabase_filter_dife)
+                progress = (idx + 1) / len(conciliacion_payouts)
 
                 progress_bar.progress(min(progress,1.0))
                 status_placeholder.success(f'Registro {idx + 1} guardado correctamente')
@@ -519,6 +479,19 @@ if payouts_metabase is not None:
         #creamos una columna que nos arroja que banco tienen diferencias para pasar a analizaarlo
         conciliacion_payouts['Estado'] = conciliacion_payouts['Diferencia'].apply(lambda x: 'Conciliado' if x == 0 else 'Diferencias')
         
+        
+
+        columns_diferences = {
+            'fecha_proceso': 'FechaTexto',
+            'name':'BANCO',
+            'monto total':'Monto Banco',
+            'Monto':'Monto Kashio',
+            'Diferencia':'Diferencia',
+            'Estado':'Estado'
+        }
+
+        conciliacion_payouts = conciliacion_payouts.rename(columns=columns_diferences)
+
         st.dataframe(conciliacion_payouts, use_container_width=True)
 
         #hoy_str = hoy.strftime('%d/%m/%Y')
@@ -540,7 +513,7 @@ if payouts_metabase is not None:
         if 'Diferencias' in conciliacion_payouts['Estado'].values:
             st.warning('Se detectaron diferencias en la conciliación')
 
-            if st.button('Ver diferencias'):
+            if st.button('Ver diferencias', use_container_width=True):
                 st.session_state.mostrar_diferencias = True
             
             if st.session_state.mostrar_diferencias:
@@ -560,24 +533,27 @@ if payouts_metabase is not None:
                 payouts_metabase_df.loc[diferencias_, 'Estado'] = f'Conciliacion_{fecha} - Diferencias' #in case doesn't work, delete this
                 metabase_filter_dife = payouts_metabase_df[diferencias_].copy()
                 #st.dataframe(metabase_filter_dife)
-                #boton para guardar                   
-                if not st.session_state.guardado_metabase:
-                    if st.button('Guardar conciliación en SharePoint'):
-                        guardar_conciliacion(payouts_metabase_df, df_final)
-                        st.session_state.guardado_metabase = True
-                        #st.rerun()
+                #boton para guardar  
 
-                # if not st.session_state.guardar_record_dif:
-                #     if st.button('Registrar diferencias en Notion'):
-                #         registros_notion(metabase_filter_dife)
-                #         st.session_state.guardar_record_dif = True
-                #         st.rerun()
+                c1, c2 = st.columns(2)      
+                with c1:          
+                    if not st.session_state.guardado_metabase:
+                        if st.button('Guardar conciliación en SharePoint', use_container_width=True):
+                            guardar_conciliacion(payouts_metabase_df, df_final)
+                            st.session_state.guardado_metabase = True
+                            #st.rerun()
+                with c2:
+                    if not st.session_state.guardar_record_dif:
+                        if st.button('Registrar diferencias en Notion', use_container_width=True):
+                            registros_notion(conciliacion_payouts)
+                            st.session_state.guardar_record_dif = True
+                            st.rerun()
         else:
             st.success('No se encontraron diferencias en la conciliación')
 
             with st.container():
                 if not st.session_state.guardado_metabase:
-                    if st.button('Guardar conciliación en SharePoint'):
+                    if st.button('Guardar conciliación en SharePoint', use_container_width=True):
                         #payouts_metabase_df['Estado'] = f'Conci. {hoy_str}'
                         payouts_metabase_df['Estado'] = f'Conciliacion_{fecha}' #en caso no funcione borrar
                         guardar_conciliacion(payouts_metabase_df, df_final)
