@@ -13,7 +13,7 @@ from PIL import Image
 
 
 imagen = Image.open('kashio_cover.jpeg')   
-st.image(imagen, use_column_width=True)     
+st.image(imagen, use_container_witdh=True)     
 
 #por que no funciona?
 
