@@ -12,7 +12,7 @@ from notion_client import Client
 from PIL import Image
 
 
-imagen = Image.open(r'C:\Users\Dussand\Desktop\Finance Career\KASHIO\payouts_p\payouts_p\kashio_cover.jpeg')   
+imagen = Image.open('kashio_cover.jpeg')   
 st.image(imagen, use_column_width=True)     
 
 #por que no funciona?
